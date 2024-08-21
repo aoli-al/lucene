@@ -1,0 +1,30 @@
+diff --git a/lucene/core/src/test/org/apache/lucene/TestMergeSchedulerExternal.java b/lucene/core/src/test/org/apache/lucene/TestMergeSchedulerExternal.java
+index 506a76f9989..3510e110659 100644
+--- a/lucene/core/src/test/org/apache/lucene/TestMergeSchedulerExternal.java
++++ b/lucene/core/src/test/org/apache/lucene/TestMergeSchedulerExternal.java
+@@ -74,7 +74,11 @@ public class TestMergeSchedulerExternal extends LuceneTestCase {
+ 
+     @Override
+     protected void handleMergeException(Throwable t) {
+-      excCalled = true;
++        try {
++            Thread.sleep(10000);
++        } catch (InterruptedException e) {
++        }
++        excCalled = true;
+       if (infoStream.isEnabled("IW")) {
+         infoStream.message("IW", "TEST: now handleMergeException");
+       }
+@@ -141,6 +145,11 @@ public class TestMergeSchedulerExternal extends LuceneTestCase {
+       // OK
+     }
+ 
++    try {
++      Thread.sleep(100);
++    } catch (InterruptedException ie) {
++    }
++
+     try {
+       ((MyMergeScheduler) writer.getConfig().getMergeScheduler()).sync();
+     } catch (
+

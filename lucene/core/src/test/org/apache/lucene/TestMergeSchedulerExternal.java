@@ -74,7 +74,11 @@ public class TestMergeSchedulerExternal extends LuceneTestCase {
 
     @Override
     protected void handleMergeException(Throwable t) {
-      excCalled = true;
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+        }
+        excCalled = true;
       if (infoStream.isEnabled("IW")) {
         infoStream.message("IW", "TEST: now handleMergeException");
       }
@@ -139,6 +143,11 @@ public class TestMergeSchedulerExternal extends LuceneTestCase {
         @SuppressWarnings("unused")
         IllegalStateException ise) {
       // OK
+    }
+
+    try {
+      Thread.sleep(100);
+    } catch (InterruptedException ie) {
     }
 
     try {
