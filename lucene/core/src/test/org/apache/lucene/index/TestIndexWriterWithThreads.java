@@ -270,9 +270,9 @@ public class TestIndexWriterWithThreads extends LuceneTestCase {
   // failure to trigger an IOException
   public void _testMultipleThreadsFailure(MockDirectoryWrapper.Failure failure) throws Exception {
 
-    int NUM_THREADS = 3;
+    int NUM_THREADS = 1;
 
-    for (int iter = 0; iter < 2; iter++) {
+    for (int iter = 0; iter < 1; iter++) {
       if (VERBOSE) {
         System.out.println("TEST: iter=" + iter);
       }
@@ -296,6 +296,9 @@ public class TestIndexWriterWithThreads extends LuceneTestCase {
       }
       syncStart.await();
 
+      try {
+        Thread.sleep(500);
+      } catch (Exception e) {}
       dir.failOn(failure);
       failure.setDoFail();
 

@@ -1560,6 +1560,9 @@ public class IndexWriter
         if (infoStream.isEnabled("IW")) {
           infoStream.message("IW", "hit exception updating document");
         }
+        try {
+          Thread.sleep(1000);
+        } catch (Exception e) {}
         maybeCloseOnTragicEvent();
       }
     }
@@ -2498,6 +2501,9 @@ public class IndexWriter
 
       docWriter.close(); // mark it as closed first to prevent subsequent indexing actions/flushes
       assert !Thread.holdsLock(this) : "IndexWriter lock should never be hold when aborting";
+      try {
+        Thread.sleep(5000);
+      } catch (Exception e) {}
       docWriter.abort(); // don't sync on IW here
       docWriter.flushControl.waitForFlush(); // wait for all concurrently running flushes
       publishFlushedSegments(
@@ -4944,6 +4950,10 @@ public class IndexWriter
     assert merge.registerDone;
     assert merge.maxNumSegments == UNBOUNDED_MAX_MERGE_SEGMENTS || merge.maxNumSegments > 0;
 
+    try {
+      Thread.sleep(1000);
+    } catch (Exception e) {
+    }
     if (tragedy.get() != null) {
       throw new IllegalStateException(
           "this writer hit an unrecoverable error; cannot merge", tragedy.get());
