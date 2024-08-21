@@ -321,8 +321,8 @@ public class TestConcurrentMergeScheduler extends LuceneTestCase {
     IndexWriterConfig iwc =
         new IndexWriterConfig(new MockAnalyzer(random())).setCommitOnClose(false);
 
-    final int maxMergeCount = TestUtil.nextInt(random(), 1, 5);
-    final int maxMergeThreads = TestUtil.nextInt(random(), 1, maxMergeCount);
+    final int maxMergeCount = 1;
+    final int maxMergeThreads = 1;
     final CountDownLatch enoughMergesWaiting = new CountDownLatch(maxMergeCount);
     final AtomicInteger runningMergeCount = new AtomicInteger(0);
     final AtomicBoolean failed = new AtomicBoolean();
@@ -331,6 +331,7 @@ public class TestConcurrentMergeScheduler extends LuceneTestCase {
       System.out.println(
           "TEST: maxMergeCount=" + maxMergeCount + " maxMergeThreads=" + maxMergeThreads);
     }
+    int[] index = new int[] {0};
 
     ConcurrentMergeScheduler cms =
         new ConcurrentMergeScheduler() {
@@ -358,6 +359,9 @@ public class TestConcurrentMergeScheduler extends LuceneTestCase {
                 // Then sleep a bit to give a chance for the bug
                 // (too many pending merges) to appear:
                 Thread.sleep(20);
+                if (Thread.currentThread().getName().contains("#1")) {
+                  Thread.sleep(50000);
+                }
                 super.doMerge(mergeSource, merge);
               } finally {
                 runningMergeCount.decrementAndGet();
@@ -381,17 +385,17 @@ public class TestConcurrentMergeScheduler extends LuceneTestCase {
     IndexWriter w = new IndexWriter(dir, iwc);
     Document doc = new Document();
     doc.add(newField("field", "field", TextField.TYPE_NOT_STORED));
-    while (enoughMergesWaiting.getCount() != 0 && !failed.get()) {
+    while (true) {
       for (int i = 0; i < 10; i++) {
         w.addDocument(doc);
       }
     }
-    try {
-      w.commit();
-    } finally {
-      w.close();
-    }
-    dir.close();
+//    try {
+//      w.commit();
+//    } finally {
+//      w.close();
+//    }
+//    dir.close();
   }
 
   public void testSmallMergesDonNotGetThreads() throws IOException {

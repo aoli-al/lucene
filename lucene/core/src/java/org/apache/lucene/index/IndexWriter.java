@@ -2305,10 +2305,25 @@ public class IndexWriter
     maybeMerge(config.getMergePolicy(), MergeTrigger.EXPLICIT, UNBOUNDED_MAX_MERGE_SEGMENTS);
   }
 
+  int index = 0;
   private final void maybeMerge(MergePolicy mergePolicy, MergeTrigger trigger, int maxNumSegments)
       throws IOException {
     ensureOpen(false);
-    if (updatePendingMerges(mergePolicy, trigger, maxNumSegments) != null) {
+    boolean shouldWait = false;
+    if (index == 1) {
+      while (!ConcurrentMergeScheduler.threadMergeIssued) {
+        Thread.yield();
+        shouldWait = true;
+      }
+    }
+    MergePolicy.MergeSpecification result = updatePendingMerges(mergePolicy, trigger, maxNumSegments);
+    if (result != null) {
+      index = 1;
+      if (shouldWait) {
+        try {
+          Thread.sleep(50000);
+        } catch (Exception e) {}
+      }
       executeMerge(trigger);
     }
   }

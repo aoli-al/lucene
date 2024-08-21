@@ -541,6 +541,7 @@ public class ConcurrentMergeScheduler extends MergeScheduler {
     }
   }
 
+  public static boolean threadMergeIssued = false;
   @Override
   public synchronized void merge(MergeSource mergeSource, MergeTrigger trigger) throws IOException {
 
@@ -562,12 +563,20 @@ public class ConcurrentMergeScheduler extends MergeScheduler {
       message("  index(source): " + mergeSource.toString());
     }
 
+    boolean mergeThreadCreated = false;
     // Iterate, pulling from the IndexWriter's queue of
     // pending merges, until it's empty:
     while (true) {
 
       if (maybeStall(mergeSource) == false) {
         break;
+      }
+      if (Thread.currentThread().getName().contains("Merge Thread") && mergeThreadCreated) {
+        threadMergeIssued = true;
+        try {
+          Thread.sleep(1000);
+        } catch (Exception e) {
+        }
       }
 
       OneMerge merge = mergeSource.getNextMerge();
@@ -591,6 +600,7 @@ public class ConcurrentMergeScheduler extends MergeScheduler {
           message("    launch new thread [" + newMergeThread.getName() + "]");
         }
 
+        mergeThreadCreated = true;
         newMergeThread.start();
         updateMergeThreads();
 
