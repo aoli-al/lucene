@@ -360,7 +360,7 @@ public abstract class StringHelper {
   }
 
   // Holds 128 bit unsigned value:
-  private static BigInteger nextId;
+  public static BigInteger nextId;
   private static final BigInteger mask128;
   private static final Object idLock = new Object();
 

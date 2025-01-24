@@ -112,7 +112,7 @@ final class TestRuleSetupAndRestoreClassEnv extends AbstractBeforeAfterRule {
     }
 
     savedInfoStream = InfoStream.getDefault();
-    final Random random = RandomizedContext.current().getRandom();
+    final Random random = random();
     final boolean v = random.nextBoolean();
     if (INFOSTREAM) {
       InfoStream.setDefault(new ThreadNameFixingPrintStreamInfoStream(System.out));

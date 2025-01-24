@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.math.BigInteger;
+import java.util.Random;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.ConcurrentMergeScheduler;
@@ -41,7 +44,13 @@ import org.apache.lucene.tests.store.MockDirectoryWrapper;
 import org.apache.lucene.tests.util.LuceneTestCase;
 import org.apache.lucene.util.InfoStream;
 import org.apache.lucene.util.PrintStreamInfoStream;
+import org.apache.lucene.util.StringHelper;
 import org.junit.AfterClass;
+import org.pastalab.fray.core.randomness.ControlledRandom;
+import org.pastalab.fray.core.scheduler.PCTScheduler;
+import org.pastalab.fray.core.scheduler.POSScheduler;
+import org.pastalab.fray.core.scheduler.RandomScheduler;
+import org.pastalab.fray.junit.plain.FrayInTestLauncher;
 
 /**
  * Holds tests cases to verify external APIs are accessible while not being in
@@ -106,6 +115,31 @@ public class TestMergeSchedulerExternal extends LuceneTestCase {
   @AfterClass
   public static void afterClass() {
     infoStream = null;
+  }
+
+  public void testSubclassConcurrentMergeSchedulerWithFray() throws IOException {
+    FrayInTestLauncher.INSTANCE.launchFrayTest(() -> {
+      myTest();
+    });
+  }
+
+  public void testSubclassConcurrentMergeSchedulerWithFrayReplay() throws IOException {
+    for (int i = 0; i < 3; i++) {
+      FrayInTestLauncher.INSTANCE.launchFrayReplay(() -> {
+        myTest();
+      }, "");
+    }
+  }
+
+  public void myTest() {
+    try {
+      StringHelper.nextId = new BigInteger("0");
+      LuceneTestCase.random = new Random(1);
+      TestMergeSchedulerExternal testMergeSchedulerExternal = new TestMergeSchedulerExternal();
+      testMergeSchedulerExternal.testSubclassConcurrentMergeScheduler();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public void testSubclassConcurrentMergeScheduler() throws IOException {

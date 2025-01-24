@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
-apply plugin: 'java-library'
+plugins {
+  id("org.pastalab.fray.gradle") version "0.2.0"
+  id("java-library")
+}
 
 description = 'Lucene core library'
 

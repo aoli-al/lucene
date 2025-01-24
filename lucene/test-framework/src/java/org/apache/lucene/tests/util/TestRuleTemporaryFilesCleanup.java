@@ -127,7 +127,7 @@ final class TestRuleTemporaryFilesCleanup extends TestRuleAdapter {
               .getFileSystem(null);
     }
 
-    Random random = RandomizedContext.current().getRandom();
+    Random random = new Random(0);
 
     // speed up tests by omitting actual fsync calls to the hardware most of the time.
     if (targetClass.isAnnotationPresent(SuppressFsync.class) || random.nextInt(100) > 0) {

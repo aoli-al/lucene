@@ -746,8 +746,9 @@ public abstract class LuceneTestCase extends Assert {
    * // tight loop with many invocations.
    * </pre>
    */
+  public static Random random = new Random(0);
   public static Random random() {
-    return RandomizedContext.current().getRandom();
+    return random;
   }
 
   /**
@@ -980,7 +981,7 @@ public abstract class LuceneTestCase extends Assert {
       // Always use consistent settings, else CMS's dynamic (SSD or not)
       // defaults can change, hurting reproducibility:
       ConcurrentMergeScheduler cms =
-          randomBoolean() ? new TestConcurrentMergeScheduler() : new ConcurrentMergeScheduler();
+          random().nextBoolean() ? new TestConcurrentMergeScheduler() : new ConcurrentMergeScheduler();
 
       // Only 1 thread can run at once (should maybe help reproducibility),
       // with up to 3 pending merges before segment-producing threads are
