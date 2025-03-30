@@ -23,6 +23,7 @@ grant {
 
   // test-files/ resources
   permission java.io.FilePermission "${common.dir}${/}-", "read,write,delete";
+  permission java.io.FilePermission "/Users/aoli/tmp/-", "read,write,delete";
   // classpath-as-file, eg getDataPath, and only rarely (this acts like a JDK bug...)
   permission java.io.FilePermission ".", "read";
 

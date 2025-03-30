@@ -16,8 +16,13 @@
  */
 
 plugins {
-  id("org.pastalab.fray.gradle") version "0.2.0"
+  id("org.pastalab.fray.gradle") version "0.3.2-SNAPSHOT"
   id("java-library")
+}
+
+repositories {
+  mavenCentral()
+  mavenLocal()
 }
 
 description = 'Lucene core library'
