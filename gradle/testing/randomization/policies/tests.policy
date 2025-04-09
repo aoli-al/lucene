@@ -22,7 +22,7 @@ grant {
   permission java.io.FilePermission "${java.home}${/}-", "read,execute";
 
   // test-files/ resources
-  permission java.io.FilePermission "${common.dir}${/}-", "read";
+  permission java.io.FilePermission "${common.dir}${/}-", "read,write,delete";
   // classpath-as-file, eg getDataPath, and only rarely (this acts like a JDK bug...)
   permission java.io.FilePermission ".", "read";
 

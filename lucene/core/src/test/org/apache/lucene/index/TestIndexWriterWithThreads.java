@@ -46,6 +46,9 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.SuppressForbidden;
 import org.apache.lucene.util.ThreadInterruptedException;
+import org.pastalab.fray.core.randomness.ControlledRandom;
+import org.pastalab.fray.core.scheduler.PCTScheduler;
+import org.pastalab.fray.junit.plain.FrayInTestLauncher;
 
 /** MultiThreaded IndexWriter tests */
 @LuceneTestCase.SuppressCodecs("SimpleText")
@@ -452,6 +455,19 @@ public class TestIndexWriterWithThreads extends LuceneTestCase {
   // IOException during rollback(), with multiple threads, is OK:
   public void testIOExceptionDuringAbortWithThreadsOnlyOnce() throws Exception {
     _testMultipleThreadsFailure(new FailOnlyOnAbortOrFlush(true));
+  }
+
+  public void testIOExceptionDuringAbortWithThreadsOnlyOnceWithFray() {
+    FrayInTestLauncher.INSTANCE.launchFray(() -> {
+              try {
+                testIOExceptionDuringWriteSegmentWithThreadsOnlyOnce();
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
+            }, new PCTScheduler(new ControlledRandom(), 15, 0), new ControlledRandom(), 10000,
+            60, false, (config) -> {
+              return null;
+            });
   }
 
   // Throws IOException during DocumentsWriter.writeSegment
